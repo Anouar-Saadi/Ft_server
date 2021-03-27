@@ -32,6 +32,7 @@ COPY	srcs/default /etc/nginx/sites-available/default
 #DOWNLOAD PHPMYADMIN PACKAGES (wget command to Download ,unzip command to extract)
 RUN		apt-get install -y wget unzip
 RUN		wget https://files.phpmyadmin.net/phpMyAdmin/4.9.0.1/phpMyAdmin-4.9.0.1-all-languages.zip
+
 #Extract to web server directory ,rename ,rename and edit the file config.inc.php
 RUN		unzip phpMyAdmin-4.9.0.1-all-languages.zip -d /var/www/html/
 RUN		mv	/var/www/html/phpMyAdmin-4.9.0.1-all-languages /var/www/html/phpmyadmin
@@ -39,6 +40,7 @@ RUN		rm /var/www/html/phpmyadmin/config.sample.inc.php
 COPY	srcs/config.inc.php /var/www/html/phpmyadmin/
 RUN		chmod 660 /var/www/html/phpmyadmin/config.inc.php
 RUN		chown -R www-data:www-data /var/www/html/phpmyadmin
+
 #Starting mysql service and create database phpmyadmin ,user
 RUN		service mysql start; \
 		mysql -u root -e "CREATE DATABASE phpmyadmin"; \
@@ -63,8 +65,10 @@ RUN		chown -R www-data:www-data /var/www/html/wordpress
 #The SSL cerf. is publicly shared with anyone requesting thecontemnt)
 #1. Install SSL_utils
 RUN		apt-get install -y openssl
+
 #2. Create the SSL cert. self-signed
 RUN		printf 'MA\ns\na\na\na\na\na\n' | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+
 #3. Config nginx to use ssl
 COPY	srcs/self-signed.conf /etc/nginx/snippets/
 
